@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/standard_margin"
+    android:paddingEnd="@dimen/double_margin"
+    android:paddingStart="@dimen/double_margin"
+    android:paddingTop="@dimen/double_margin">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/double_margin"
+        android:text="@string/use_this_location"
+        android:textColor="@color/black"
+        android:textSize="@dimen/large_text" />
+
+    <TextView
+        android:id="@+id/tv_coordinates"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_title"
+        android:layout_marginBottom="@dimen/half_margin"
+        tools:text="31.124554''N, 29.00006455''E" />
+
+    <TextView
+        android:id="@+id/tv_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_coordinates"
+        android:layout_marginBottom="@dimen/standard_margin"
+        android:ellipsize="end"
+        android:maxLines="1"
+        tools:text="19 Khaleel ElMaghraby, Mandara Bahary, Alexandria, Egypt" />
+
+    <ImageView
+        android:id="@+id/img_map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/buttons"
+        android:layout_below="@+id/tv_address"
+        android:layout_marginBottom="@dimen/standard_margin"
+        android:contentDescription="@string/map"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:id="@+id/buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="end">
+
+        <TextView
+            android:id="@+id/tv_change_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/standard_margin"
+            android:text="@string/change_location"
+            android:textAllCaps="true"
+            android:textColor="@color/dodger_blue" />
+
+        <TextView
+            android:id="@+id/tv_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/standard_margin"
+            android:text="@string/select"
+            android:textAllCaps="true"
+            android:textColor="@color/dodger_blue" />
+
+    </LinearLayout>
+
+</RelativeLayout>

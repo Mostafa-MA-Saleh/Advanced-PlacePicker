@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:selectableItemBackground"
+    android:gravity="center_vertical"
+    android:padding="@dimen/standard_margin">
+
+    <ImageView
+        android:id="@+id/img_icon"
+        android:layout_width="@dimen/extra_double_margin"
+        android:layout_height="@dimen/extra_double_margin"
+        android:contentDescription="@string/icon"
+        android:layout_margin="@dimen/standard_margin"
+        android:background="@drawable/icon_circle_background"
+        android:src="@drawable/ic_my_location" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/black"
+            tools:text="School" />
+
+        <TextView
+            android:id="@+id/tv_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="19 Khaleel Elmaghraby, Mandarah Bahray, Alexandria, Egypt" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="extra_double_margin">24dp</dimen>
+    <dimen name="double_margin">16dp</dimen>
+    <dimen name="standard_margin">8dp</dimen>
+    <dimen name="half_margin">4dp</dimen>
+    <dimen name="large_text">18sp</dimen>
+    <dimen name="bottom_sheet_height">180dp</dimen>
+</resources>

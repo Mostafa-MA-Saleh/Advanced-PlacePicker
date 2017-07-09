@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Advanced PlacePicker.iml" filepath="$PROJECT_DIR$/Advanced PlacePicker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/advancedplacepicker/advancedplacepicker.iml" filepath="$PROJECT_DIR$/advancedplacepicker/advancedplacepicker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/appdemo/appdemo.iml" filepath="$PROJECT_DIR$/appdemo/appdemo.iml" />
+    </modules>
+  </component>
+</project>

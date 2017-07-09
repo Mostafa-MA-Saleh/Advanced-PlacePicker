@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="saleh.ma.mostafa.gmail.com.advancedplacepicker.activities.AdvancedPlacePicker">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/bottom_sheet_height">
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/card_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/half_margin"
+            android:foreground="?android:selectableItemBackground"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="@dimen/half_margin">
+
+            <TextView
+                android:id="@+id/tv_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/standard_margin"
+                android:drawableLeft="@drawable/ic_search_dark"
+                android:drawablePadding="@dimen/extra_double_margin"
+                android:drawableStart="@drawable/ic_search_dark"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:padding="@dimen/half_margin"
+                android:text="@string/search"
+                android:textSize="@dimen/large_text" />
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btn_my_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/map"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="@dimen/double_margin"
+            android:src="@drawable/ic_my_location"
+            app:backgroundTint="@color/white" />
+
+
+        <fragment
+            class="com.google.android.gms.maps.SupportMapFragment"
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/tv_select_location" />
+
+        <TextView
+            android:id="@+id/tv_select_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/white"
+            android:drawableLeft="@drawable/ic_location_pin"
+            android:drawablePadding="@dimen/extra_double_margin"
+            android:drawableStart="@drawable/ic_location_pin"
+            android:gravity="center_vertical"
+            android:padding="@dimen/double_margin"
+            android:text="@string/select_this_location"
+            android:textSize="@dimen/large_text" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:colorBackground"
+        android:minHeight="@dimen/bottom_sheet_height"
+        app:behavior_peekHeight="@dimen/bottom_sheet_height"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:paddingEnd="@dimen/standard_margin"
+            android:paddingStart="@dimen/standard_margin"
+            android:paddingTop="@dimen/standard_margin"
+            android:text="@string/or_choose_a_nearby_place" />
+
+        <ProgressBar
+            android:id="@+id/progress_places"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_title"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/extra_double_margin" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rec_nearby_places"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_title"
+            android:background="?android:colorBackground"
+            tools:listitem="@layout/list_item_place" />
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>
