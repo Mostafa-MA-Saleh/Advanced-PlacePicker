@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -24,6 +25,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -57,6 +59,9 @@ import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.OnFinishedListen
 
 public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReadyCallback, SelectedLocationDialog.OnPlaceSelectedListener, GoogleMap.OnMapLoadedCallback {
 
+    private static final String ENABLE_NEAR_BY = "nearbyPlaces";
+    public static final String ADDRESS = "Address";
+
     private TextView tvSearch;
     private ProgressBar progressBar;
     private RecyclerView recNearbyPlaces;
@@ -72,17 +77,22 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
     private NearbyPlacesAdapter adapter;
     private Handler populatePlacesHandler;
     private Runnable populatePlacesRunnable;
+    private boolean enableNearbyPlaces;
 
-    public static Intent buildIntent(Context context) {
-        return new Intent(context, AdvancedPlacePicker.class);
+    public static Intent buildIntent(Context context, boolean enableNearByPlaces) {
+        Intent launchIntent = new Intent(context, AdvancedPlacePicker.class);
+        launchIntent.putExtra(ENABLE_NEAR_BY, enableNearByPlaces);
+        return launchIntent;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_advanced_place_picker);
-        getSupportActionBar().hide();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         findViewsById();
         setOnClickListeners();
         setResult(RESULT_CANCELED);
@@ -91,7 +101,15 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
         supportmapfragment.getMapAsync(this);
         mLocationManager = new LocationManager(this);
         mNetworkManager = new NetworkManager();
-        setupNearbyPlacesBottomSheet();
+        enableNearbyPlaces = getIntent().getBooleanExtra(ENABLE_NEAR_BY, true);
+        if (enableNearbyPlaces) {
+            setupNearbyPlacesBottomSheet();
+        } else {
+            findViewById(R.id.bottom_sheet).setVisibility(View.GONE);
+            CoordinatorLayout.LayoutParams params = new CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.setMargins(0, 0, 0, 0);
+            findViewById(R.id.main_container).setLayoutParams(params);
+        }
     }
 
     private void findViewsById() {
@@ -131,12 +149,13 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                    getSupportActionBar().show();
-                } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    getSupportActionBar().hide();
+                if (getSupportActionBar() != null) {
+                    if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                        getSupportActionBar().show();
+                    } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                        getSupportActionBar().hide();
+                    }
                 }
-
             }
 
             @Override
@@ -304,7 +323,7 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
     @Override
     public void onPlaceSelected(Address address) {
         Intent finishIntent = new Intent();
-        finishIntent.putExtra("Address", address);
+        finishIntent.putExtra(ADDRESS, address);
         setResult(RESULT_OK, finishIntent);
         finish();
     }
@@ -332,12 +351,14 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
                 });
             }
         });
-        googleMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
-            @Override
-            public void onCameraMoveStarted(int i) {
-                populatePlacesHandler.removeCallbacks(populatePlacesRunnable);
-            }
-        });
+        if (enableNearbyPlaces) {
+            googleMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+                @Override
+                public void onCameraMoveStarted(int i) {
+                    populatePlacesHandler.removeCallbacks(populatePlacesRunnable);
+                }
+            });
+        }
         googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
             @Override
             public void onCameraMove() {
@@ -349,13 +370,15 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
 
     @Override
     public void onMapLoaded() {
-        mGoogleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
-            @Override
-            public void onCameraIdle() {
-                populateNearbyPlaces();
-            }
-        });
-        if(hasLocationPermission()){
+        if (enableNearbyPlaces) {
+            mGoogleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+                @Override
+                public void onCameraIdle() {
+                    populateNearbyPlaces();
+                }
+            });
+        }
+        if (hasLocationPermission()) {
             locate();
         }
     }

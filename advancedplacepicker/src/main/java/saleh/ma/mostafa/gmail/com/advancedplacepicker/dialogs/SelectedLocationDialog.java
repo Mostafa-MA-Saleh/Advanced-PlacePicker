@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,10 +22,6 @@ import saleh.ma.mostafa.gmail.com.advancedplacepicker.R;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.models.Address;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.AddressResolver;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.OnFinishedListener;
-
-/**
- * Created by Mostafa on 07/08/2017.
- */
 
 public class SelectedLocationDialog extends Dialog {
 
@@ -48,6 +45,7 @@ public class SelectedLocationDialog extends Dialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_selected_location);
         setRelativeSize(0.9f, 0.6f);
         findViewsById();
