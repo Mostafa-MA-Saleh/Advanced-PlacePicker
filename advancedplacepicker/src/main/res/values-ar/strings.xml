@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Advanced PlacePicker</string>
+    <string name="search">بحث</string>
+    <string name="select_this_location">اختر هاذا الموقع</string>
+    <string name="use_this_location">استخدم هذا الموقع؟</string>
+    <string name="change_location">تغيير الموقع</string>
+    <string name="select">اختار</string>
+    <string name="icon">ايقونة</string>
+    <string name="or_choose_a_nearby_place">أو اختر مكان:</string>
+    <string name="google_api_key"> </string>
+    <string name="map">خريطة</string>
+    <string name="please_wait">من فضلك انتظر…</string>
+</resources>
