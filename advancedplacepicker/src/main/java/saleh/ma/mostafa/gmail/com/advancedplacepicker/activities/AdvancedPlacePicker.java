@@ -221,7 +221,8 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
 
     @Override
     public void onBackPressed() {
-        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+        if (bottomSheetBehavior != null &&
+                bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else {
             super.onBackPressed();
