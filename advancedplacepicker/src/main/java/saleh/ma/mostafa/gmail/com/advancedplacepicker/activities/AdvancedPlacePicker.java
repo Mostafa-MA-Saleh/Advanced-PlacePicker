@@ -5,10 +5,14 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.LocaleList;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
@@ -45,6 +49,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PointOfInterest;
 
 import java.util.List;
+import java.util.Locale;
 
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.R;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.dialogs.SelectedLocationDialog;
@@ -387,5 +392,24 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
         if (hasLocationPermission()) {
             locate();
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale newLocale = Locale.getDefault();
+        Resources res = newBase.getResources();
+        Configuration configuration = res.getConfiguration();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            configuration.setLocale(newLocale);
+            LocaleList localeList = new LocaleList(newLocale);
+            LocaleList.setDefault(localeList);
+            configuration.setLocales(localeList);
+            newBase = newBase.createConfigurationContext(configuration);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            configuration.setLocale(newLocale);
+            Locale.setDefault(newLocale);
+            newBase = newBase.createConfigurationContext(configuration);
+        }
+        super.attachBaseContext(newBase);
     }
 }
