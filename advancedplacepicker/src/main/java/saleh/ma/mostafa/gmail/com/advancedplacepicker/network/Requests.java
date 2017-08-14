@@ -15,4 +15,8 @@ public interface Requests {
                                                @Query("radius") int radius,
                                                @Query("key") String key);
 
+    @GET("maps/api/geocode/json")
+    Call<AddressResponse> getAddress(@Query("latlng") String latlng,
+                                     @Query("language") String language);
+
 }

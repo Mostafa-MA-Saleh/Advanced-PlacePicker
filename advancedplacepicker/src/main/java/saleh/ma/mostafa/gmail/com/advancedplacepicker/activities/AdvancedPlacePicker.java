@@ -16,6 +16,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -100,7 +101,7 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
         SupportMapFragment supportmapfragment = (SupportMapFragment) fragment;
         supportmapfragment.getMapAsync(this);
         mLocationManager = new LocationManager(this);
-        mNetworkManager = new NetworkManager();
+        mNetworkManager = NetworkManager.getInstance();
         enableNearbyPlaces = getIntent().getBooleanExtra(ENABLE_NEAR_BY, true);
         if (enableNearbyPlaces) {
             setupNearbyPlacesBottomSheet();
@@ -282,25 +283,29 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
         tvSelectLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddressResolver.getInstance().getAddress(AdvancedPlacePicker.this, mMarker.getPosition(), new OnFinishedListener<String>() {
-                    @Override
-                    public void onSuccess(@Nullable String address) {
-                        tvSearch.setText(TextUtils.isEmpty(address) ? getString(R.string.search) : address);
-                    }
-
-                    @Override
-                    public void onFailure(String errorMessage, int errorCode) {
-                        Log.e("Error", errorMessage);
-                    }
-                });
                 final ProgressDialog pleaseWaitDialog = ProgressDialog.show(AdvancedPlacePicker.this, null, getString(R.string.please_wait));
                 pleaseWaitDialog.setCancelable(false);
                 mGoogleMap.snapshot(new GoogleMap.SnapshotReadyCallback() {
                     @Override
-                    public void onSnapshotReady(Bitmap bitmap) {
-                        new SelectedLocationDialog(AdvancedPlacePicker.this, mMarker.getPosition(), bitmap)
-                                .setOnPlaceSelectedListener(AdvancedPlacePicker.this).show();
-                        pleaseWaitDialog.dismiss();
+                    public void onSnapshotReady(final Bitmap bitmap) {
+                        AddressResolver.getInstance().getAddress(AdvancedPlacePicker.this, mMarker.getPosition(), new OnFinishedListener<String>() {
+                            @Override
+                            public void onSuccess(@Nullable String address) {
+                                tvSearch.setText(address);
+                                new SelectedLocationDialog(AdvancedPlacePicker.this, mMarker.getPosition(), address, bitmap)
+                                        .setOnPlaceSelectedListener(AdvancedPlacePicker.this).show();
+                                pleaseWaitDialog.dismiss();
+                            }
+
+                            @Override
+                            public void onFailure(String errorMessage, int errorCode) {
+                                pleaseWaitDialog.dismiss();
+                                new AlertDialog.Builder(AdvancedPlacePicker.this)
+                                        .setMessage(errorMessage)
+                                        .setPositiveButton(android.R.string.ok, null)
+                                        .show();
+                            }
+                        });
                     }
                 });
             }

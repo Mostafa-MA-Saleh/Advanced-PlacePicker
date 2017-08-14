@@ -6,8 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,8 +18,6 @@ import java.util.Locale;
 
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.R;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.models.Address;
-import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.AddressResolver;
-import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.OnFinishedListener;
 
 public class SelectedLocationDialog extends Dialog {
 
@@ -32,13 +28,15 @@ public class SelectedLocationDialog extends Dialog {
     private ImageView imgMap;
 
     private LatLng mCoordinates;
+    private String mAddress;
     private Bitmap bitmapMap;
     private OnPlaceSelectedListener mListener;
 
-    public SelectedLocationDialog(@NonNull Context context, LatLng coordinates, Bitmap mapImage) {
+    public SelectedLocationDialog(@NonNull Context context, LatLng coordinates, String address, Bitmap mapImage) {
         super(context);
         setCanceledOnTouchOutside(false);
         mCoordinates = coordinates;
+        mAddress = address;
         bitmapMap = mapImage;
     }
 
@@ -82,17 +80,7 @@ public class SelectedLocationDialog extends Dialog {
 
     private void setupTextViews() {
         tvCoordinates.setText(String.format(Locale.getDefault(), "%.8f, %.8f", mCoordinates.latitude, mCoordinates.longitude));
-        AddressResolver.getInstance().getAddress(getContext(), mCoordinates, new OnFinishedListener<String>() {
-            @Override
-            public void onSuccess(@Nullable String address) {
-                tvAddress.setText(address);
-            }
-
-            @Override
-            public void onFailure(String errorMessage, int errorCode) {
-                Log.e("Error", errorMessage);
-            }
-        });
+        tvAddress.setText(mAddress);
     }
 
     public SelectedLocationDialog setOnPlaceSelectedListener(OnPlaceSelectedListener mListener) {

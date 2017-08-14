@@ -2,10 +2,12 @@ package saleh.ma.mostafa.gmail.com.advancedplacepicker.network;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -23,14 +25,20 @@ import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.OnFinishedListen
 
 public class NetworkManager {
 
+    private static NetworkManager mInstance = new NetworkManager();
+
     private Retrofit retrofit;
     private Requests requests;
 
-    public NetworkManager() {
+    private NetworkManager() {
         requests = getClient().create(Requests.class);
     }
 
-    public Retrofit getClient() {
+    public static NetworkManager getInstance() {
+        return mInstance;
+    }
+
+    private Retrofit getClient() {
         if (retrofit == null) {
             HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
             interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -62,6 +70,27 @@ public class NetworkManager {
 
             @Override
             public void onFailure(@NonNull Call<NearbyPlacesResponse> call, @NonNull Throwable t) {
+                onFinishedListener.onFailure(t.getLocalizedMessage(), -1);
+            }
+        });
+    }
+
+    public void getAddress(final Context context, LatLng coordinates, final OnFinishedListener<String> onFinishedListener) {
+        requests.getAddress(coordinates.latitude + "," + coordinates.longitude, Locale.getDefault().getLanguage()).enqueue(new Callback<AddressResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<AddressResponse> call, @NonNull Response<AddressResponse> response) {
+                AddressResponse addressResponse = response.body();
+                if (addressResponse != null && !addressResponse.results.isEmpty()
+                        && !TextUtils.isEmpty(addressResponse.results.get(0).formatted_address)) {
+                    String address = addressResponse.results.get(0).formatted_address;
+                    onFinishedListener.onSuccess(address);
+                } else {
+                    onFinishedListener.onFailure(context.getString(R.string.invalid_location), -1);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<AddressResponse> call, @NonNull Throwable t) {
                 onFinishedListener.onFailure(t.getLocalizedMessage(), -1);
             }
         });
