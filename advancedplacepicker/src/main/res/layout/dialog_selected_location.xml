@@ -56,7 +56,7 @@
             android:layout_height="match_parent"
             android:contentDescription="@string/marker"
             android:scaleType="centerInside"
-            android:src="@drawable/pin" />
+            android:src="@drawable/ic_map_center_pin.png" />
     </FrameLayout>
 
     <LinearLayout
