@@ -36,15 +36,28 @@
         android:maxLines="1"
         tools:text="19 Khaleel ElMaghraby, Mandara Bahary, Alexandria, Egypt" />
 
-    <ImageView
-        android:id="@+id/img_map"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/buttons"
-        android:layout_below="@+id/tv_address"
-        android:layout_marginBottom="@dimen/standard_margin"
-        android:contentDescription="@string/map"
-        android:scaleType="centerCrop" />
+        android:layout_below="@+id/tv_address">
+
+        <ImageView
+            android:id="@+id/img_map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/standard_margin"
+            android:contentDescription="@string/map"
+            android:scaleType="centerCrop" />
+
+        <ImageView
+            android:id="@+id/img_marker"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/marker"
+            android:scaleType="centerInside"
+            android:src="@drawable/pin" />
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/buttons"

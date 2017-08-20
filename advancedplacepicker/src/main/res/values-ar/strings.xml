@@ -12,4 +12,5 @@
     <string name="map">خريطة</string>
     <string name="please_wait">من فضلك انتظر…</string>
     <string name="invalid_location">هذا المكان غير صحيح، من فضلك اختر مكان آخر وأعد المحاولة!</string>
+    <string name="marker">Marker</string>
 </resources>

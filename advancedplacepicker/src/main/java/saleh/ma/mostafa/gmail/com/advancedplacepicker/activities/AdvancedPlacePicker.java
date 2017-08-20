@@ -44,8 +44,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PointOfInterest;
 
 import java.util.List;
@@ -78,7 +76,6 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
     private GoogleMap mGoogleMap;
     private LocationManager mLocationManager;
     private NetworkManager mNetworkManager;
-    private Marker mMarker;
     private BottomSheetBehavior bottomSheetBehavior;
     private NearbyPlacesAdapter adapter;
     private Handler populatePlacesHandler;
@@ -293,24 +290,25 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
                 mGoogleMap.snapshot(new GoogleMap.SnapshotReadyCallback() {
                     @Override
                     public void onSnapshotReady(final Bitmap bitmap) {
-                        AddressResolver.getInstance().getAddress(AdvancedPlacePicker.this, mMarker.getPosition(), new OnFinishedListener<String>() {
-                            @Override
-                            public void onSuccess(@Nullable String address) {
-                                tvSearch.setText(address);
-                                new SelectedLocationDialog(AdvancedPlacePicker.this, mMarker.getPosition(), address, bitmap)
-                                        .setOnPlaceSelectedListener(AdvancedPlacePicker.this).show();
-                                pleaseWaitDialog.dismiss();
-                            }
+                        AddressResolver.getInstance().getAddress(AdvancedPlacePicker.this,
+                                mGoogleMap.getCameraPosition().target, new OnFinishedListener<String>() {
+                                    @Override
+                                    public void onSuccess(@Nullable String address) {
+                                        tvSearch.setText(address);
+                                        new SelectedLocationDialog(AdvancedPlacePicker.this, mGoogleMap.getCameraPosition().target, address, bitmap)
+                                                .setOnPlaceSelectedListener(AdvancedPlacePicker.this).show();
+                                        pleaseWaitDialog.dismiss();
+                                    }
 
-                            @Override
-                            public void onFailure(String errorMessage, int errorCode) {
-                                pleaseWaitDialog.dismiss();
-                                new AlertDialog.Builder(AdvancedPlacePicker.this)
-                                        .setMessage(errorMessage)
-                                        .setPositiveButton(android.R.string.ok, null)
-                                        .show();
-                            }
-                        });
+                                    @Override
+                                    public void onFailure(String errorMessage, int errorCode) {
+                                        pleaseWaitDialog.dismiss();
+                                        new AlertDialog.Builder(AdvancedPlacePicker.this)
+                                                .setMessage(errorMessage)
+                                                .setPositiveButton(android.R.string.ok, null)
+                                                .show();
+                                    }
+                                });
                     }
                 });
             }
@@ -343,7 +341,6 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
-        mMarker = googleMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)));
         googleMap.getUiSettings().setMapToolbarEnabled(false);
         googleMap.setOnPoiClickListener(new GoogleMap.OnPoiClickListener() {
             @Override
@@ -370,12 +367,6 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
                 }
             });
         }
-        googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-            @Override
-            public void onCameraMove() {
-                mMarker.setPosition(mGoogleMap.getCameraPosition().target);
-            }
-        });
         googleMap.setOnMapLoadedCallback(this);
     }
 
