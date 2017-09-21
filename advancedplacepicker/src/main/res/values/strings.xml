@@ -7,7 +7,7 @@
     <string name="select">Select</string>
     <string name="icon">Icon</string>
     <string name="or_choose_a_nearby_place">Or choose a nearby place:</string>
-    <string name="google_api_key"> </string>
+    <string name="google_api_key" translatable="false" />
     <string name="map">Map</string>
     <string name="please_wait">Please Wait…</string>
     <string name="invalid_location">This is not a valid location, please select another location and try again!</string>

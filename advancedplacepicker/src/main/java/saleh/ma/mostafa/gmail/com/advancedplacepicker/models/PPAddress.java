@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class Address implements Parcelable {
+public class PPAddress implements Parcelable {
 
     @Nullable
     private String address;
@@ -15,9 +15,9 @@ public class Address implements Parcelable {
     @NonNull
     private LatLng coordinates = new LatLng(0,0);
 
-    public Address() {}
+    public PPAddress() {}
 
-    public Address(@Nullable String address, @NonNull LatLng coordinates) {
+    public PPAddress(@Nullable String address, @NonNull LatLng coordinates) {
         this.address = address;
         this.coordinates = coordinates;
     }
@@ -57,20 +57,20 @@ public class Address implements Parcelable {
         return address + "\n" + coordinates.latitude + ", " + coordinates.longitude;
     }
 
-    private Address(Parcel in) {
+    private PPAddress(Parcel in) {
         this.address = in.readString();
         this.coordinates = in.readParcelable(LatLng.class.getClassLoader());
     }
 
-    public static final Creator<Address> CREATOR = new Creator<Address>() {
+    public static final Creator<PPAddress> CREATOR = new Creator<PPAddress>() {
         @Override
-        public Address createFromParcel(Parcel source) {
-            return new Address(source);
+        public PPAddress createFromParcel(Parcel source) {
+            return new PPAddress(source);
         }
 
         @Override
-        public Address[] newArray(int size) {
-            return new Address[size];
+        public PPAddress[] newArray(int size) {
+            return new PPAddress[size];
         }
     };
 }

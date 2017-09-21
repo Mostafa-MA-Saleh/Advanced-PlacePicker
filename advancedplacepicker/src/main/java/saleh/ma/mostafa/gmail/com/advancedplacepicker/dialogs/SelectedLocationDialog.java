@@ -17,7 +17,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.Locale;
 
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.R;
-import saleh.ma.mostafa.gmail.com.advancedplacepicker.models.Address;
+import saleh.ma.mostafa.gmail.com.advancedplacepicker.models.PPAddress;
 
 public class SelectedLocationDialog extends Dialog {
 
@@ -71,7 +71,7 @@ public class SelectedLocationDialog extends Dialog {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
-                    mListener.onPlaceSelected(new Address(mAddress, mCoordinates));
+                    mListener.onPlaceSelected(new PPAddress(mAddress, mCoordinates));
                 }
                 dismiss();
             }
@@ -97,6 +97,6 @@ public class SelectedLocationDialog extends Dialog {
     }
 
     public interface OnPlaceSelectedListener {
-        void onPlaceSelected(Address address);
+        void onPlaceSelected(PPAddress address);
     }
 }

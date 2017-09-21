@@ -51,7 +51,7 @@ import java.util.Locale;
 
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.R;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.dialogs.SelectedLocationDialog;
-import saleh.ma.mostafa.gmail.com.advancedplacepicker.models.Address;
+import saleh.ma.mostafa.gmail.com.advancedplacepicker.models.PPAddress;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.network.NetworkManager;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.network.Result;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.AddressResolver;
@@ -64,7 +64,7 @@ import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.OnFinishedListen
 public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReadyCallback, SelectedLocationDialog.OnPlaceSelectedListener, GoogleMap.OnMapLoadedCallback {
 
     private static final String ENABLE_NEAR_BY = "nearbyPlaces";
-    public static final String ADDRESS = "Address";
+    public static final String ADDRESS = "PPAddress";
 
     private TextView tvSearch;
     private ProgressBar progressBar;
@@ -330,7 +330,7 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
     }
 
     @Override
-    public void onPlaceSelected(Address address) {
+    public void onPlaceSelected(PPAddress address) {
         Intent finishIntent = new Intent();
         finishIntent.putExtra(ADDRESS, address);
         setResult(RESULT_OK, finishIntent);
