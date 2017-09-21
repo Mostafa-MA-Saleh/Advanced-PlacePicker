@@ -2,35 +2,42 @@ package saleh.ma.mostafa.gmail.com.advancedplacepicker.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.android.gms.maps.model.LatLng;
 
 public class Address implements Parcelable {
 
+    @Nullable
     private String address;
-    private LatLng coordinates;
+
+    @NonNull
+    private LatLng coordinates = new LatLng(0,0);
 
     public Address() {}
 
-    public Address(String address, LatLng coordinates) {
+    public Address(@Nullable String address, @NonNull LatLng coordinates) {
         this.address = address;
         this.coordinates = coordinates;
     }
 
+    @NonNull
     public LatLng getCoordinates() {
         return coordinates;
     }
 
-    public void setCoordinates(LatLng coordinates) {
+    public void setCoordinates(@NonNull LatLng coordinates) {
         this.coordinates = coordinates;
     }
 
 
+    @Nullable
     public String getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
+    public void setAddress(@Nullable String address) {
         this.address = address;
     }
 

@@ -71,7 +71,7 @@ public class SelectedLocationDialog extends Dialog {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
-                    mListener.onPlaceSelected(new Address(tvAddress.getText().toString(), mCoordinates));
+                    mListener.onPlaceSelected(new Address(mAddress, mCoordinates));
                 }
                 dismiss();
             }

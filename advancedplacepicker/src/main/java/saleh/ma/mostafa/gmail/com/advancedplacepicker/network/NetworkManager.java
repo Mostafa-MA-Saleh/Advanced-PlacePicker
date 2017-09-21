@@ -19,10 +19,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.R;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.OnFinishedListener;
 
-/**
- * Created by Mostafa on 07/09/2017.
- */
-
 public class NetworkManager {
 
     private static NetworkManager mInstance = new NetworkManager();
@@ -85,7 +81,7 @@ public class NetworkManager {
                     String address = addressResponse.results.get(0).formatted_address;
                     onFinishedListener.onSuccess(address);
                 } else {
-                    onFinishedListener.onFailure(context.getString(R.string.invalid_location), -1);
+                    onFinishedListener.onFailure(context.getString(R.string.invalid_location), 404);
                 }
             }
 
