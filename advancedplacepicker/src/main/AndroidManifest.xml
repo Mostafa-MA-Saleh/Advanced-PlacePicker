@@ -11,7 +11,11 @@
             android:name=".activities.AdvancedPlacePicker"
             android:theme="@style/WithActionBar"
             android:screenOrientation="portrait"/>
-    </application>
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/picker_api_key" />
+
+    </application>
 
 </manifest>

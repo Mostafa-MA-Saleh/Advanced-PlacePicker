@@ -52,7 +52,7 @@ public class NetworkManager {
 
     public void getNearbyPlaces(Context context, LatLng coordinates, final OnFinishedListener<List<Result>> onFinishedListener) {
         requests.getNearbyPlaces(coordinates.latitude + "," + coordinates.longitude, 1000,
-                context.getString(R.string.google_api_key)).enqueue(new Callback<NearbyPlacesResponse>() {
+                context.getString(R.string.picker_api_key)).enqueue(new Callback<NearbyPlacesResponse>() {
             @Override
             public void onResponse(@NonNull Call<NearbyPlacesResponse> call, @NonNull Response<NearbyPlacesResponse> response) {
                 NearbyPlacesResponse placesResponse = response.body();
