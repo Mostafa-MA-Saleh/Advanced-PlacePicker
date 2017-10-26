@@ -1,7 +1,8 @@
 package saleh.ma.mostafa.gmail.com.advancedplacepicker.activities;
 
 import android.Manifest;
-import android.app.ProgressDialog;
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -59,12 +60,14 @@ import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.Constants;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.LocationManager;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.NearbyPlacesAdapter;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.OnFinishedListener;
+import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.Utils;
 
 
 public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReadyCallback, SelectedLocationDialog.OnPlaceSelectedListener, GoogleMap.OnMapLoadedCallback {
 
     private static final String ENABLE_NEAR_BY = "nearbyPlaces";
     public static final String ADDRESS = "PPAddress";
+    public static final int REQUEST_PLACE_PICKER = 193;
 
     private TextView tvSearch;
     private ProgressBar progressBar;
@@ -82,10 +85,33 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
     private Runnable populatePlacesRunnable;
     private boolean enableNearbyPlaces;
 
+    /**
+     * @deprecated you should use {@link #start(Activity, boolean)} or {@link #start(Fragment, boolean)} instead.
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated
     public static Intent buildIntent(Context context, boolean enableNearByPlaces) {
         Intent launchIntent = new Intent(context, AdvancedPlacePicker.class);
         launchIntent.putExtra(ENABLE_NEAR_BY, enableNearByPlaces);
         return launchIntent;
+    }
+
+    /**
+     * Results will be delivered in onActivityResult with the requestCode {@link #REQUEST_PLACE_PICKER}
+     */
+    @SuppressWarnings("deprecation")
+    public static void start(Activity activity, boolean enableNearByPlaces) {
+        Intent launchIntent = buildIntent(activity, enableNearByPlaces);
+        activity.startActivityForResult(launchIntent, REQUEST_PLACE_PICKER);
+    }
+
+    /**
+     * Results will be delivered in onActivityResult with the requestCode {@link #REQUEST_PLACE_PICKER}
+     */
+    @SuppressWarnings("deprecation")
+    public static void start(Fragment fragment, boolean enableNearByPlaces) {
+        Intent launchIntent = buildIntent(fragment.getContext(), enableNearByPlaces);
+        fragment.startActivityForResult(launchIntent, REQUEST_PLACE_PICKER);
     }
 
     @Override
@@ -116,12 +142,12 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
     }
 
     private void findViewsById() {
-        recNearbyPlaces = (RecyclerView) findViewById(R.id.rec_nearby_places);
-        progressBar = (ProgressBar) findViewById(R.id.progress_places);
-        tvSearch = (TextView) findViewById(R.id.tv_search);
-        btnMyLocation = (FloatingActionButton) findViewById(R.id.btn_my_location);
-        cardSearch = (CardView) findViewById(R.id.card_search);
-        tvSelectLocation = (TextView) findViewById(R.id.tv_select_location);
+        recNearbyPlaces = findViewById(R.id.rec_nearby_places);
+        progressBar = findViewById(R.id.progress_places);
+        tvSearch = findViewById(R.id.tv_search);
+        btnMyLocation = findViewById(R.id.btn_my_location);
+        cardSearch = findViewById(R.id.card_search);
+        tvSelectLocation = findViewById(R.id.tv_select_location);
     }
 
     private Runnable getPopulatePlacesRunnable() {
@@ -285,8 +311,7 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
         tvSelectLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final ProgressDialog pleaseWaitDialog = ProgressDialog.show(AdvancedPlacePicker.this, null, getString(R.string.please_wait));
-                pleaseWaitDialog.setCancelable(false);
+                final Dialog progressDialog = Utils.showProgressDialog(AdvancedPlacePicker.this, true);
                 mGoogleMap.snapshot(new GoogleMap.SnapshotReadyCallback() {
                     @Override
                     public void onSnapshotReady(final Bitmap bitmap) {
@@ -297,12 +322,12 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
                                         tvSearch.setText(address);
                                         new SelectedLocationDialog(AdvancedPlacePicker.this, mGoogleMap.getCameraPosition().target, address, bitmap)
                                                 .setOnPlaceSelectedListener(AdvancedPlacePicker.this).show();
-                                        pleaseWaitDialog.dismiss();
+                                        progressDialog.dismiss();
                                     }
 
                                     @Override
                                     public void onFailure(String errorMessage, int errorCode) {
-                                        pleaseWaitDialog.dismiss();
+                                        progressDialog.dismiss();
                                         new AlertDialog.Builder(AdvancedPlacePicker.this)
                                                 .setMessage(errorMessage)
                                                 .setPositiveButton(android.R.string.ok, null)

@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_open_picker).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(AdvancedPlacePicker.buildIntent(MainActivity.this, false), 4);
+                AdvancedPlacePicker.start(MainActivity.this, false);
             }
         });
     }
@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 4 && resultCode == RESULT_OK) {
+        if (requestCode == AdvancedPlacePicker.REQUEST_PLACE_PICKER && resultCode == RESULT_OK) {
             String address = data.getParcelableExtra(AdvancedPlacePicker.ADDRESS).toString();
             Toast.makeText(this, address, Toast.LENGTH_LONG).show();
         }
