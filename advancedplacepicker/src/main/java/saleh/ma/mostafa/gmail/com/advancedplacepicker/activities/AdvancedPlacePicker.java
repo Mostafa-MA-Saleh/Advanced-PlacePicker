@@ -63,7 +63,7 @@ import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.OnFinishedListen
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.Utils;
 
 
-public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReadyCallback, SelectedLocationDialog.OnPlaceSelectedListener, GoogleMap.OnMapLoadedCallback {
+public class AdvancedPlacePicker extends AppCompatActivity implements SelectedLocationDialog.OnPlaceSelectedListener {
 
     private static final String ENABLE_NEAR_BY = "nearbyPlaces";
     public static final String ADDRESS = "PPAddress";
@@ -127,7 +127,7 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
         setResult(RESULT_CANCELED);
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.map);
         SupportMapFragment supportmapfragment = (SupportMapFragment) fragment;
-        supportmapfragment.getMapAsync(this);
+        supportmapfragment.getMapAsync(onMapReadyCallback);
         mLocationManager = new LocationManager(this);
         mNetworkManager = NetworkManager.getInstance();
         enableNearbyPlaces = getIntent().getBooleanExtra(ENABLE_NEAR_BY, true);
@@ -363,52 +363,56 @@ public class AdvancedPlacePicker extends AppCompatActivity implements OnMapReady
     }
 
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mGoogleMap = googleMap;
-        googleMap.getUiSettings().setMapToolbarEnabled(false);
-        googleMap.setOnPoiClickListener(new GoogleMap.OnPoiClickListener() {
-            @Override
-            public void onPoiClick(PointOfInterest pointOfInterest) {
-                mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(pointOfInterest.latLng));
-                AddressResolver.getInstance().getAddress(AdvancedPlacePicker.this, pointOfInterest.latLng, new OnFinishedListener<String>() {
-                    @Override
-                    public void onSuccess(@Nullable String obj) {
-                        tvSearch.setText(obj);
-                    }
+    private OnMapReadyCallback onMapReadyCallback = new OnMapReadyCallback() {
+        @Override
+        public void onMapReady(GoogleMap googleMap) {
+            mGoogleMap = googleMap;
+            googleMap.getUiSettings().setMapToolbarEnabled(false);
+            googleMap.setOnPoiClickListener(new GoogleMap.OnPoiClickListener() {
+                @Override
+                public void onPoiClick(PointOfInterest pointOfInterest) {
+                    mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(pointOfInterest.latLng));
+                    AddressResolver.getInstance().getAddress(AdvancedPlacePicker.this, pointOfInterest.latLng, new OnFinishedListener<String>() {
+                        @Override
+                        public void onSuccess(@Nullable String obj) {
+                            tvSearch.setText(obj);
+                        }
 
+                        @Override
+                        public void onFailure(String errorMessage, int errorCode) {
+                            Log.e("Error", errorMessage);
+                        }
+                    });
+                }
+            });
+            if (enableNearbyPlaces) {
+                googleMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
                     @Override
-                    public void onFailure(String errorMessage, int errorCode) {
-                        Log.e("Error", errorMessage);
+                    public void onCameraMoveStarted(int i) {
+                        populatePlacesHandler.removeCallbacks(populatePlacesRunnable);
                     }
                 });
             }
-        });
-        if (enableNearbyPlaces) {
-            googleMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
-                @Override
-                public void onCameraMoveStarted(int i) {
-                    populatePlacesHandler.removeCallbacks(populatePlacesRunnable);
-                }
-            });
+            googleMap.setOnMapLoadedCallback(onMapLoadedCallback);
         }
-        googleMap.setOnMapLoadedCallback(this);
-    }
+    };
 
-    @Override
-    public void onMapLoaded() {
-        if (enableNearbyPlaces) {
-            mGoogleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
-                @Override
-                public void onCameraIdle() {
-                    populateNearbyPlaces();
-                }
-            });
+    private GoogleMap.OnMapLoadedCallback onMapLoadedCallback = new GoogleMap.OnMapLoadedCallback() {
+        @Override
+        public void onMapLoaded() {
+            if (enableNearbyPlaces) {
+                mGoogleMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+                    @Override
+                    public void onCameraIdle() {
+                        populateNearbyPlaces();
+                    }
+                });
+            }
+            if (hasLocationPermission()) {
+                locate();
+            }
         }
-        if (hasLocationPermission()) {
-            locate();
-        }
-    }
+    };
 
     @Override
     protected void attachBaseContext(Context newBase) {
