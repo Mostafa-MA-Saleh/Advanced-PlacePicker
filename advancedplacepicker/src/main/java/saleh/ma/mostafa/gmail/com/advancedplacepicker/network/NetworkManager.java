@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Locale;
 
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -36,10 +35,7 @@ public class NetworkManager {
 
     private Retrofit getClient() {
         if (retrofit == null) {
-            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
             OkHttpClient client = new OkHttpClient.Builder()
-                    .addInterceptor(interceptor)
                     .build();
             retrofit = new Retrofit.Builder()
                     .baseUrl("https://maps.googleapis.com/")

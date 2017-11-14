@@ -19,6 +19,11 @@ android {
     }
 }
 
+ext {
+    supportVersion = '27.0.1'
+    playServicesVersion = '11.6.0'
+}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':advancedplacepicker')
