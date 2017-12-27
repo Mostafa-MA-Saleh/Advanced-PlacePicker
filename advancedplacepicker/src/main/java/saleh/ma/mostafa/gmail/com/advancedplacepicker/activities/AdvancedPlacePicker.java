@@ -56,6 +56,8 @@ import saleh.ma.mostafa.gmail.com.advancedplacepicker.models.PPAddress;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.network.NetworkManager;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.network.Result;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.AddressResolver;
+import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.ConnectionChangeReceiver;
+import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.ConnectionManager;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.Constants;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.LocationManager;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.NearbyPlacesAdapter;
@@ -77,6 +79,7 @@ public class AdvancedPlacePicker extends AppCompatActivity implements SelectedLo
     private TextView tvSelectLocation;
 
     private GoogleMap mGoogleMap;
+    private SupportMapFragment supportmapfragment;
     private LocationManager mLocationManager;
     private NetworkManager mNetworkManager;
     private BottomSheetBehavior bottomSheetBehavior;
@@ -84,6 +87,18 @@ public class AdvancedPlacePicker extends AppCompatActivity implements SelectedLo
     private Handler populatePlacesHandler;
     private Runnable populatePlacesRunnable;
     private boolean enableNearbyPlaces;
+
+    private ConnectionChangeReceiver connectionChangeReceiver = new ConnectionChangeReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (ConnectionManager.isConnected()) {
+                if (mGoogleMap == null) {
+                    supportmapfragment.getMapAsync(onMapReadyCallback);
+                }
+                unregister(getApplicationContext());
+            }
+        }
+    };
 
     /**
      * @deprecated you should use {@link #start(Activity, boolean)} or {@link #start(Fragment, boolean)} instead.
@@ -118,15 +133,15 @@ public class AdvancedPlacePicker extends AppCompatActivity implements SelectedLo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_advanced_place_picker);
+        NetworkManager.init(getApplicationContext());
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         findViewsById();
         setOnClickListeners();
-        setResult(RESULT_CANCELED);
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.map);
-        SupportMapFragment supportmapfragment = (SupportMapFragment) fragment;
+        supportmapfragment = (SupportMapFragment) fragment;
         supportmapfragment.getMapAsync(onMapReadyCallback);
         mLocationManager = new LocationManager(this);
         mNetworkManager = NetworkManager.getInstance();
@@ -139,6 +154,18 @@ public class AdvancedPlacePicker extends AppCompatActivity implements SelectedLo
             params.setMargins(0, 0, 0, 0);
             findViewById(R.id.main_container).setLayoutParams(params);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        connectionChangeReceiver.register(getApplicationContext());
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        connectionChangeReceiver.unregister(getApplicationContext());
     }
 
     private void findViewsById() {
@@ -411,6 +438,7 @@ public class AdvancedPlacePicker extends AppCompatActivity implements SelectedLo
             if (hasLocationPermission()) {
                 locate();
             }
+            tvSelectLocation.setEnabled(true);
         }
     };
 

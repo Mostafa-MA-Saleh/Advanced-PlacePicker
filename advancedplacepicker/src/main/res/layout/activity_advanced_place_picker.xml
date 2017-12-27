@@ -81,6 +81,7 @@
             android:drawableLeft="@drawable/ic_location_pin"
             android:drawablePadding="@dimen/extra_double_margin"
             android:drawableStart="@drawable/ic_location_pin"
+            android:enabled="false"
             android:gravity="center_vertical"
             android:padding="@dimen/double_margin"
             android:text="@string/select_this_location"
