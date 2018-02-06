@@ -6,7 +6,6 @@ import android.text.TextUtils;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.List;
 import java.util.Locale;
 
 import okhttp3.OkHttpClient;
@@ -53,27 +52,6 @@ public class NetworkManager {
                     .build();
         }
         return retrofit;
-    }
-
-    public void getNearbyPlaces(Context context, LatLng coordinates, final OnFinishedListener<List<Result>> onFinishedListener) {
-        requests.getNearbyPlaces(coordinates.latitude + "," + coordinates.longitude, 1000,
-                context.getString(R.string.picker_api_key)).enqueue(new Callback<NearbyPlacesResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<NearbyPlacesResponse> call, @NonNull Response<NearbyPlacesResponse> response) {
-                NearbyPlacesResponse placesResponse = response.body();
-                if (placesResponse != null && placesResponse.getResults() != null && !placesResponse.getResults().isEmpty()) {
-                    List<Result> places = placesResponse.getResults();
-                    onFinishedListener.onSuccess(places);
-                } else {
-                    onFinishedListener.onFailure("Something went wrong!", -1);
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<NearbyPlacesResponse> call, @NonNull Throwable t) {
-                onFinishedListener.onFailure(t.getLocalizedMessage(), -1);
-            }
-        });
     }
 
     public void getAddress(final Context context, LatLng coordinates, final OnFinishedListener<String> onFinishedListener) {

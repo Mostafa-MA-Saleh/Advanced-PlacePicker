@@ -3,12 +3,11 @@ package saleh.ma.mostafa.gmail.com.advancedplacepicker.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -53,11 +52,11 @@ public class SelectedLocationDialog extends Dialog {
     }
 
     private void findViewsById() {
-        tvCoordinates = (TextView) findViewById(R.id.tv_coordinates);
-        tvAddress = (TextView) findViewById(R.id.tv_address);
-        tvChangeLocation = (TextView) findViewById(R.id.tv_change_location);
-        tvSelect = (TextView) findViewById(R.id.tv_select);
-        imgMap = (ImageView) findViewById(R.id.img_map);
+        tvCoordinates = findViewById(R.id.tv_coordinates);
+        tvAddress = findViewById(R.id.tv_address);
+        tvChangeLocation = findViewById(R.id.tv_change_location);
+        tvSelect = findViewById(R.id.tv_select);
+        imgMap = findViewById(R.id.img_map);
     }
 
     private void setOnClickListeners() {
@@ -89,11 +88,9 @@ public class SelectedLocationDialog extends Dialog {
     }
 
     private void setRelativeSize(float width, float height) {
-        Point screenSize = new Point();
-        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-        wm.getDefaultDisplay().getSize(screenSize);
+        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         if (getWindow() != null)
-            getWindow().setLayout((int) (screenSize.x * width), (int) (screenSize.y * height));
+            getWindow().setLayout((int) (displayMetrics.widthPixels * width), (int) (displayMetrics.heightPixels * height));
     }
 
     public interface OnPlaceSelectedListener {

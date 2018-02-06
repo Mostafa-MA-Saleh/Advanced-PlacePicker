@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_open_picker).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AdvancedPlacePicker.start(MainActivity.this, false);
+                AdvancedPlacePicker.start(MainActivity.this);
             }
         });
     }
