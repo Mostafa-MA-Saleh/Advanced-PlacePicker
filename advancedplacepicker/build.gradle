@@ -7,7 +7,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 27
         versionCode 1
-        versionName "4.0"
+        versionName "4.1"
     }
     buildTypes {
         release {
@@ -18,7 +18,7 @@ android {
 }
 
 ext {
-    supportVersion = '27.0.2'
+    supportVersion = '27.1.0'
     playServicesVersion = '11.8.0'
 }
 

@@ -18,6 +18,7 @@ public class LocationManager implements GoogleApiClient.ConnectionCallbacks, Goo
 
     private Context mContext;
     private GoogleApiClient mGoogleApiClient;
+    private LocationListener locationListener;
 
     public LocationManager(Context context) {
         mContext = context;
@@ -31,20 +32,26 @@ public class LocationManager implements GoogleApiClient.ConnectionCallbacks, Goo
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .build();
-            mGoogleApiClient.connect();
         }
         return mGoogleApiClient;
     }
 
     @SuppressWarnings("MissingPermission")
     public void getLocation(LocationListener locationListener) {
-        LocationRequest request = new LocationRequest().setNumUpdates(1);
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, request, locationListener);
+        if (mGoogleApiClient.isConnected()) {
+            LocationRequest request = new LocationRequest().setNumUpdates(1);
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, request, locationListener);
+        } else {
+            this.locationListener = locationListener;
+            mGoogleApiClient.connect();
+        }
     }
 
     @Override
     public void onConnected(Bundle bundle) {
-
+        if (locationListener != null) {
+            getLocation(locationListener);
+        }
     }
 
     @Override
