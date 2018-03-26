@@ -54,7 +54,8 @@ import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.PermissionUtils;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.Utils;
 
 
-public class AdvancedPlacePicker extends AppCompatActivity implements SelectedLocationDialog.OnPlaceSelectedListener, View.OnClickListener, LocationListener {
+public class AdvancedPlacePicker extends AppCompatActivity
+        implements SelectedLocationDialog.OnPlaceSelectedListener, View.OnClickListener, LocationListener {
 
     public static final String ADDRESS = "PPAddress";
     public static final int REQUEST_PLACE_PICKER = 193;
@@ -145,7 +146,9 @@ public class AdvancedPlacePicker extends AppCompatActivity implements SelectedLo
             case Constants.REQUEST_SEARCH:
                 if (resultCode == RESULT_OK) {
                     Place place = PlaceAutocomplete.getPlace(this, data);
-                    mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), Constants.DEFAULT_ZOOM));
+                    if (mGoogleMap != null) {
+                        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), Constants.DEFAULT_ZOOM));
+                    }
                     searchTextView.setText(place.getAddress());
                 }
         }

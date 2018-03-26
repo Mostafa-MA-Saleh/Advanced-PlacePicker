@@ -20,7 +20,7 @@ android {
 
 ext {
     supportVersion = '27.1.0'
-    playServicesVersion = '11.8.0'
+    playServicesVersion = '12.0.0'
 }
 
 dependencies {
