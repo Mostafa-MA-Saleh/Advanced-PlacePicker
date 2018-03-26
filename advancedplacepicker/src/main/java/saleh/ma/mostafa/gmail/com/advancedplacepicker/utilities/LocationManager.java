@@ -1,6 +1,7 @@
 package saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
@@ -14,26 +15,24 @@ import com.google.android.gms.location.LocationServices;
  * Created by Mostafa on 07/08/2017.
  */
 
-public class LocationManager implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class LocationManager extends ContextWrapper implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    private Context mContext;
     private GoogleApiClient mGoogleApiClient;
     private LocationListener locationListener;
 
     public LocationManager(Context context) {
-        mContext = context;
-        getGoogleApiClient();
+        super(context);
+        buildGoogleApiClient();
     }
 
-    public GoogleApiClient getGoogleApiClient() {
+    private void buildGoogleApiClient() {
         if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(mContext)
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addApi(LocationServices.API)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .build();
         }
-        return mGoogleApiClient;
     }
 
     @SuppressWarnings("MissingPermission")

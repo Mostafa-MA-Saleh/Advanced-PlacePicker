@@ -15,12 +15,10 @@ import android.os.Bundle;
 import android.os.LocaleList;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -52,29 +50,27 @@ import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.ConnectionManage
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.Constants;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.LocationManager;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.OnFinishedListener;
+import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.PermissionUtils;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.utilities.Utils;
 
 
-public class AdvancedPlacePicker extends AppCompatActivity implements SelectedLocationDialog.OnPlaceSelectedListener {
+public class AdvancedPlacePicker extends AppCompatActivity implements SelectedLocationDialog.OnPlaceSelectedListener, View.OnClickListener, LocationListener {
 
     public static final String ADDRESS = "PPAddress";
     public static final int REQUEST_PLACE_PICKER = 193;
 
-    private TextView tvSearch;
-    private FloatingActionButton btnMyLocation;
-    private CardView cardSearch;
-    private TextView tvSelectLocation;
+    private TextView searchTextView;
 
     private GoogleMap mGoogleMap;
-    private SupportMapFragment supportmapfragment;
+    private SupportMapFragment mSupportMapFragment;
     private LocationManager mLocationManager;
 
-    private ConnectionChangeReceiver connectionChangeReceiver = new ConnectionChangeReceiver() {
+    private ConnectionChangeReceiver mConnectionChangeReceiver = new ConnectionChangeReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (ConnectionManager.isConnected()) {
                 if (mGoogleMap == null) {
-                    supportmapfragment.getMapAsync(onMapReadyCallback);
+                    mSupportMapFragment.getMapAsync(mOnMapReadyCallback);
                 }
                 unregister(getApplicationContext());
             }
@@ -113,35 +109,33 @@ public class AdvancedPlacePicker extends AppCompatActivity implements SelectedLo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_advanced_place_picker);
         NetworkManager.init(getApplicationContext());
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar supportActionBar = getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.hide();
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
         }
         findViewsById();
         setOnClickListeners();
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.map);
-        supportmapfragment = (SupportMapFragment) fragment;
-        supportmapfragment.getMapAsync(onMapReadyCallback);
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.map_fragment);
+        mSupportMapFragment = (SupportMapFragment) fragment;
+        mSupportMapFragment.getMapAsync(mOnMapReadyCallback);
         mLocationManager = new LocationManager(this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        connectionChangeReceiver.register(getApplicationContext());
+        mConnectionChangeReceiver.register(getApplicationContext());
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        connectionChangeReceiver.unregister(getApplicationContext());
+        mConnectionChangeReceiver.unregister(getApplicationContext());
     }
 
     private void findViewsById() {
-        tvSearch = findViewById(R.id.tv_search);
-        btnMyLocation = findViewById(R.id.btn_my_location);
-        cardSearch = findViewById(R.id.card_search);
-        tvSelectLocation = findViewById(R.id.tv_select_location);
+        searchTextView = findViewById(R.id.search_text_view);
     }
 
     @Override
@@ -152,7 +146,7 @@ public class AdvancedPlacePicker extends AppCompatActivity implements SelectedLo
                 if (resultCode == RESULT_OK) {
                     Place place = PlaceAutocomplete.getPlace(this, data);
                     mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), Constants.DEFAULT_ZOOM));
-                    tvSearch.setText(place.getAddress());
+                    searchTextView.setText(place.getAddress());
                 }
         }
     }
@@ -182,83 +176,24 @@ public class AdvancedPlacePicker extends AppCompatActivity implements SelectedLo
     }
 
     private void locate() {
-        mLocationManager.getLocation(new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                LatLng coordinates = new LatLng(location.getLatitude(), location.getLongitude());
-                mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(coordinates, Constants.DEFAULT_ZOOM));
-                AddressResolver.getInstance().getAddress(AdvancedPlacePicker.this, coordinates, new OnFinishedListener<String>() {
-                    @Override
-                    public void onSuccess(@Nullable String address) {
-                        tvSearch.setText(TextUtils.isEmpty(address) ? getString(R.string.search) : address);
-                    }
-
-                    @Override
-                    public void onFailure(String errorMessage, int errorCode) {
-                        Log.e("Error", errorMessage);
-                    }
-                });
-            }
-        });
+        mLocationManager.getLocation(this);
     }
 
     private void setOnClickListeners() {
-        btnMyLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (hasLocationPermission()) {
-                    locate();
-                } else {
-                    ActivityCompat.requestPermissions(AdvancedPlacePicker.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-                }
-            }
-        });
-        cardSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startPlacesAutocomplete();
-            }
-        });
-        tvSelectLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Dialog progressDialog = Utils.showProgressDialog(AdvancedPlacePicker.this, true);
-                mGoogleMap.snapshot(new GoogleMap.SnapshotReadyCallback() {
-                    @Override
-                    public void onSnapshotReady(final Bitmap bitmap) {
-                        AddressResolver.getInstance().getAddress(AdvancedPlacePicker.this,
-                                mGoogleMap.getCameraPosition().target, new OnFinishedListener<String>() {
-                                    @Override
-                                    public void onSuccess(@Nullable String address) {
-                                        tvSearch.setText(address);
-                                        new SelectedLocationDialog(AdvancedPlacePicker.this, mGoogleMap.getCameraPosition().target, address, bitmap)
-                                                .setOnPlaceSelectedListener(AdvancedPlacePicker.this).show();
-                                        progressDialog.dismiss();
-                                    }
-
-                                    @Override
-                                    public void onFailure(String errorMessage, int errorCode) {
-                                        progressDialog.dismiss();
-                                        new AlertDialog.Builder(AdvancedPlacePicker.this)
-                                                .setMessage(errorMessage)
-                                                .setPositiveButton(android.R.string.ok, null)
-                                                .show();
-                                    }
-                                });
-                    }
-                });
-            }
-        });
+        findViewById(R.id.my_location_button).setOnClickListener(this);
+        findViewById(R.id.search_card_view).setOnClickListener(this);
+        findViewById(R.id.select_location_text_view).setOnClickListener(this);
     }
 
     private boolean hasLocationPermission() {
-        return ActivityCompat.checkSelfPermission(AdvancedPlacePicker.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        return PermissionUtils.hasPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
     private void startPlacesAutocomplete() {
         try {
             Intent intent =
-                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN).build(AdvancedPlacePicker.this);
+                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                            .build(this);
             startActivityForResult(intent, Constants.REQUEST_SEARCH);
         } catch (GooglePlayServicesNotAvailableException | GooglePlayServicesRepairableException e) {
             Log.e("Error", "GooglePlayServicesNotAvailableException");
@@ -273,8 +208,7 @@ public class AdvancedPlacePicker extends AppCompatActivity implements SelectedLo
         finish();
     }
 
-
-    private OnMapReadyCallback onMapReadyCallback = new OnMapReadyCallback() {
+    private OnMapReadyCallback mOnMapReadyCallback = new OnMapReadyCallback() {
         @Override
         public void onMapReady(GoogleMap googleMap) {
             mGoogleMap = googleMap;
@@ -286,7 +220,7 @@ public class AdvancedPlacePicker extends AppCompatActivity implements SelectedLo
                     AddressResolver.getInstance().getAddress(AdvancedPlacePicker.this, pointOfInterest.latLng, new OnFinishedListener<String>() {
                         @Override
                         public void onSuccess(@Nullable String obj) {
-                            tvSearch.setText(obj);
+                            searchTextView.setText(obj);
                         }
 
                         @Override
@@ -296,17 +230,17 @@ public class AdvancedPlacePicker extends AppCompatActivity implements SelectedLo
                     });
                 }
             });
-            googleMap.setOnMapLoadedCallback(onMapLoadedCallback);
+            googleMap.setOnMapLoadedCallback(mOnMapLoadedCallback);
         }
     };
 
-    private GoogleMap.OnMapLoadedCallback onMapLoadedCallback = new GoogleMap.OnMapLoadedCallback() {
+    private GoogleMap.OnMapLoadedCallback mOnMapLoadedCallback = new GoogleMap.OnMapLoadedCallback() {
         @Override
         public void onMapLoaded() {
             if (hasLocationPermission()) {
                 locate();
             }
-            tvSelectLocation.setEnabled(true);
+            findViewById(R.id.select_location_text_view).setEnabled(true);
         }
     };
 
@@ -327,5 +261,72 @@ public class AdvancedPlacePicker extends AppCompatActivity implements SelectedLo
             newBase = newBase.createConfigurationContext(configuration);
         }
         super.attachBaseContext(newBase);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int i = v.getId();
+        if (i == R.id.my_location_button) {
+            onMyLocationClick();
+        } else if (i == R.id.search_card_view) {
+            startPlacesAutocomplete();
+        } else if (i == R.id.select_location_text_view) {
+            onSelectLocationClick();
+        }
+    }
+
+    private void onSelectLocationClick() {
+        if (mGoogleMap != null) {
+            final Dialog progressDialog = Utils.showProgressDialog(AdvancedPlacePicker.this, true);
+            mGoogleMap.snapshot(new GoogleMap.SnapshotReadyCallback() {
+                @Override
+                public void onSnapshotReady(final Bitmap bitmap) {
+                    AddressResolver.getInstance().getAddress(AdvancedPlacePicker.this,
+                            mGoogleMap.getCameraPosition().target, new OnFinishedListener<String>() {
+                                @Override
+                                public void onSuccess(@Nullable String address) {
+                                    searchTextView.setText(address);
+                                    new SelectedLocationDialog(AdvancedPlacePicker.this, mGoogleMap.getCameraPosition().target, address, bitmap)
+                                            .setOnPlaceSelectedListener(AdvancedPlacePicker.this).show();
+                                    progressDialog.dismiss();
+                                }
+
+                                @Override
+                                public void onFailure(String errorMessage, int errorCode) {
+                                    progressDialog.dismiss();
+                                    new AlertDialog.Builder(AdvancedPlacePicker.this)
+                                            .setMessage(errorMessage)
+                                            .setPositiveButton(android.R.string.ok, null)
+                                            .show();
+                                }
+                            });
+                }
+            });
+        }
+    }
+
+    private void onMyLocationClick() {
+        if (hasLocationPermission()) {
+            locate();
+        } else {
+            PermissionUtils.requestPermission(this, Manifest.permission.ACCESS_FINE_LOCATION, Constants.REQUEST_LOCATION_PERMISSION);
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        LatLng coordinates = new LatLng(location.getLatitude(), location.getLongitude());
+        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(coordinates, Constants.DEFAULT_ZOOM));
+        AddressResolver.getInstance().getAddress(this, coordinates, new OnFinishedListener<String>() {
+            @Override
+            public void onSuccess(@Nullable String address) {
+                searchTextView.setText(TextUtils.isEmpty(address) ? getString(R.string.search) : address);
+            }
+
+            @Override
+            public void onFailure(String errorMessage, int errorCode) {
+                Log.e("Error", errorMessage);
+            }
+        });
     }
 }

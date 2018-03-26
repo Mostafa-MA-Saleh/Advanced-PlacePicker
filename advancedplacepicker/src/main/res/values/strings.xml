@@ -5,11 +5,8 @@
     <string name="use_this_location">Use this Location?</string>
     <string name="change_location">Change Location</string>
     <string name="select">Select</string>
-    <string name="icon">Icon</string>
-    <string name="or_choose_a_nearby_place">Or choose a nearby place:</string>
     <string name="picker_api_key" translatable="false" />
     <string name="map">Map</string>
-    <string name="please_wait">Please Wait…</string>
     <string name="invalid_location">This is not a valid location, please select another location and try again!</string>
     <string name="marker">Marker</string>
     <string name="no_internet_connection">No Internet Connection</string>

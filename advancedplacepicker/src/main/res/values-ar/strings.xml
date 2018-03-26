@@ -6,11 +6,8 @@
     <string name="use_this_location">استخدم هذا الموقع؟</string>
     <string name="change_location">تغيير الموقع</string>
     <string name="select">اختار</string>
-    <string name="icon">ايقونة</string>
-    <string name="or_choose_a_nearby_place">أو اختر مكان:</string>
     <string name="map">خريطة</string>
-    <string name="please_wait">من فضلك انتظر…</string>
     <string name="invalid_location">هذا المكان غير صحيح، من فضلك اختر مكان آخر وأعد المحاولة!</string>
-    <string name="marker">Marker</string>
+    <string name="marker">علامة</string>
     <string name="no_internet_connection">لا يوجد اتصال بالانترنت</string>
 </resources>

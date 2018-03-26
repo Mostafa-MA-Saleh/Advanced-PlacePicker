@@ -13,9 +13,10 @@ public class PPAddress implements Parcelable {
     private String address;
 
     @NonNull
-    private LatLng coordinates = new LatLng(0,0);
+    private LatLng coordinates = new LatLng(0, 0);
 
-    public PPAddress() {}
+    public PPAddress() {
+    }
 
     public PPAddress(@Nullable String address, @NonNull LatLng coordinates) {
         this.address = address;

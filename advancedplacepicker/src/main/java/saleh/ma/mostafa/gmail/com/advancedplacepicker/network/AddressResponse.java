@@ -11,7 +11,7 @@ public class AddressResponse {
 
     List<Address> results = new ArrayList<>();
 
-    public class Address{
+    public class Address {
         public String formatted_address;
     }
 

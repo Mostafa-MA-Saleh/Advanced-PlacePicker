@@ -18,17 +18,15 @@ import java.util.Locale;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.R;
 import saleh.ma.mostafa.gmail.com.advancedplacepicker.models.PPAddress;
 
-public class SelectedLocationDialog extends Dialog {
+public class SelectedLocationDialog extends Dialog implements View.OnClickListener {
 
-    private TextView tvCoordinates;
-    private TextView tvAddress;
-    private TextView tvChangeLocation;
-    private TextView tvSelect;
-    private ImageView imgMap;
+    private TextView coordinatesTextView;
+    private TextView addressTextView;
+    private ImageView mapImageView;
 
     private LatLng mCoordinates;
     private String mAddress;
-    private Bitmap bitmapMap;
+    private Bitmap mMapBitmap;
     private OnPlaceSelectedListener mListener;
 
     public SelectedLocationDialog(@NonNull Context context, LatLng coordinates, String address, Bitmap mapImage) {
@@ -36,7 +34,7 @@ public class SelectedLocationDialog extends Dialog {
         setCanceledOnTouchOutside(false);
         mCoordinates = coordinates;
         mAddress = address;
-        bitmapMap = mapImage;
+        mMapBitmap = mapImage;
     }
 
     @Override
@@ -48,38 +46,23 @@ public class SelectedLocationDialog extends Dialog {
         findViewsById();
         setOnClickListeners();
         setupTextViews();
-        imgMap.setImageBitmap(bitmapMap);
+        mapImageView.setImageBitmap(mMapBitmap);
     }
 
     private void findViewsById() {
-        tvCoordinates = findViewById(R.id.tv_coordinates);
-        tvAddress = findViewById(R.id.tv_address);
-        tvChangeLocation = findViewById(R.id.tv_change_location);
-        tvSelect = findViewById(R.id.tv_select);
-        imgMap = findViewById(R.id.img_map);
+        coordinatesTextView = findViewById(R.id.coordinates_text_view);
+        addressTextView = findViewById(R.id.address_text_view);
+        mapImageView = findViewById(R.id.map_image_view);
     }
 
     private void setOnClickListeners() {
-        tvChangeLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
-        tvSelect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mListener != null) {
-                    mListener.onPlaceSelected(new PPAddress(mAddress, mCoordinates));
-                }
-                dismiss();
-            }
-        });
+        findViewById(R.id.change_location_button).setOnClickListener(this);
+        findViewById(R.id.select_button).setOnClickListener(this);
     }
 
     private void setupTextViews() {
-        tvCoordinates.setText(String.format(Locale.getDefault(), "%.8f, %.8f", mCoordinates.latitude, mCoordinates.longitude));
-        tvAddress.setText(mAddress);
+        coordinatesTextView.setText(String.format(Locale.getDefault(), "%.8f, %.8f", mCoordinates.latitude, mCoordinates.longitude));
+        addressTextView.setText(mAddress);
     }
 
     public SelectedLocationDialog setOnPlaceSelectedListener(OnPlaceSelectedListener mListener) {
@@ -91,6 +74,17 @@ public class SelectedLocationDialog extends Dialog {
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         if (getWindow() != null)
             getWindow().setLayout((int) (displayMetrics.widthPixels * width), (int) (displayMetrics.heightPixels * height));
+    }
+
+    @Override
+    public void onClick(View v) {
+        int i = v.getId();
+        if (i == R.id.select_button) {
+            if (mListener != null) {
+                mListener.onPlaceSelected(new PPAddress(mAddress, mCoordinates));
+            }
+        }
+        dismiss();
     }
 
     public interface OnPlaceSelectedListener {
