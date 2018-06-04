@@ -63,6 +63,7 @@ public class AdvancedPlacePicker extends AppCompatActivity
     private TextView searchTextView;
 
     private GoogleMap mGoogleMap;
+    private LatLng currentLocation;
     private SupportMapFragment mSupportMapFragment;
     private LocationManager mLocationManager;
 
@@ -244,6 +245,10 @@ public class AdvancedPlacePicker extends AppCompatActivity
                 locate();
             }
             findViewById(R.id.select_location_text_view).setEnabled(true);
+            if (currentLocation != null) {
+                mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, Constants.DEFAULT_ZOOM));
+                currentLocation = null;
+            }
         }
     };
 
@@ -319,17 +324,21 @@ public class AdvancedPlacePicker extends AppCompatActivity
     @Override
     public void onLocationChanged(Location location) {
         LatLng coordinates = new LatLng(location.getLatitude(), location.getLongitude());
-        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(coordinates, Constants.DEFAULT_ZOOM));
-        AddressResolver.getInstance().getAddress(this, coordinates, new OnFinishedListener<String>() {
-            @Override
-            public void onSuccess(@Nullable String address) {
-                searchTextView.setText(TextUtils.isEmpty(address) ? getString(R.string.search) : address);
-            }
+        if (mGoogleMap != null) {
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(coordinates, Constants.DEFAULT_ZOOM));
+            AddressResolver.getInstance().getAddress(this, coordinates, new OnFinishedListener<String>() {
+                @Override
+                public void onSuccess(@Nullable String address) {
+                    searchTextView.setText(TextUtils.isEmpty(address) ? getString(R.string.search) : address);
+                }
 
-            @Override
-            public void onFailure(String errorMessage, int errorCode) {
-                Log.e("Error", errorMessage);
-            }
-        });
+                @Override
+                public void onFailure(String errorMessage, int errorCode) {
+                    Log.e("Error", errorMessage);
+                }
+            });
+        } else {
+            currentLocation = coordinates;
+        }
     }
 }
